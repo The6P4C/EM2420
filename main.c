@@ -13,19 +13,27 @@ void main() {
 	spi_init();
 	em2420_init();
 
-	printf("Initialization finished.\n");
+	printf("\n\nInitialization finished.\n");
 
-	uint8_t status;
+	uint16_t reg_fsmstate;
 
-	status = em2420_send_command_strobe(EM2420_STROBE_SNOP);
-
-	_delay_ms(10);
-
-	status = em2420_send_command_strobe(EM2420_STROBE_SXOSCON);
+	em2420_send_command_strobe(EM2420_STROBE_SNOP);
 
 	_delay_ms(10);
 
-	status = em2420_send_command_strobe(EM2420_STROBE_SNOP);
+	em2420_send_command_strobe(EM2420_STROBE_SXOSCON);
+
+	_delay_ms(10);
+
+	em2420_read_register(EM2420_REGISTER_FSMSTATE, &reg_fsmstate);
+
+	_delay_ms(10);
+
+	em2420_send_command_strobe(EM2420_STROBE_SRXON);
+
+	_delay_ms(10);
+
+	em2420_read_register(EM2420_REGISTER_FSMSTATE, &reg_fsmstate);
 
 	while (1) {}
 }

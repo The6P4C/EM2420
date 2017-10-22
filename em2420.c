@@ -157,6 +157,7 @@ void em2420_deselect() {
 /**
  * Sends a command strobe to the EM2420.
  * @param address The address to send the command strobe to.
+ * @returns The status byte.
  */
 uint8_t em2420_send_command_strobe(uint8_t address) {
 	// Mask to ensure 6-bit address
@@ -167,7 +168,33 @@ uint8_t em2420_send_command_strobe(uint8_t address) {
 	em2420_deselect();
 
 #ifdef DEBUG
-	printf("Sent command strobe 0x%02X %s\n\t", tx_byte, register_strings[tx_byte]);
+	printf("Sent command strobe 0x%02X %s\n\t", tx_byte, register_strings[address]);
+	print_status(status);
+	printf("\n");
+#endif
+
+	return status;
+}
+
+/**
+ * Reads a register from the EM2420.
+ * @param address The address of the register to read.
+ * @param register_value A pointer to a 16-bit integer to store the register
+ * value in.
+ * @returns The status byte.
+ */
+uint8_t em2420_read_register(uint8_t address, uint16_t *register_value) {
+	// Mask to ensure 6-bit address, and set bit 6 to signify a read
+	uint8_t tx_byte = (address & 0b00111111) | 0b01000000;
+
+	em2420_select();
+	uint8_t status = spi_tx_rx(tx_byte);
+	*register_value = spi_tx_rx(0) << 8;
+	*register_value |= spi_tx_rx(0);
+	em2420_deselect();
+
+#ifdef DEBUG
+	printf("Read register 0x%02X %s\n\tValue: 0x%02X\n\t", tx_byte, register_strings[address], *register_value);
 	print_status(status);
 	printf("\n");
 #endif
