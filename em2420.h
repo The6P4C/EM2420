@@ -58,5 +58,7 @@ void em2420_init();
 uint8_t em2420_send_command_strobe(uint8_t address);
 uint8_t em2420_read_register_16(uint8_t address, uint16_t *register_value);
 uint8_t em2420_write_register_16(uint8_t address, uint16_t register_value);
+uint8_t em2420_read_register_8(uint8_t address, uint8_t *register_value);
+uint8_t em2420_write_register_8(uint8_t address, uint8_t register_value);
 
 #endif

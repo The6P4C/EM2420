@@ -168,7 +168,7 @@ uint8_t em2420_send_command_strobe(uint8_t address) {
 	em2420_deselect();
 
 #ifdef DEBUG
-	printf("Sent command strobe 0x%02X %s\n\t", tx_byte, register_strings[address]);
+	printf("Sent command strobe 0x%02X %s\n\t", address, register_strings[address]);
 	print_status(status);
 	printf("\n");
 #endif
@@ -177,7 +177,7 @@ uint8_t em2420_send_command_strobe(uint8_t address) {
 }
 
 /**
- * Reads a register from the EM2420.
+ * Reads a 16-bit register from the EM2420.
  * @param address The address of the register to read.
  * @param register_value A pointer to a 16-bit integer to store the register
  * value in.
@@ -194,7 +194,7 @@ uint8_t em2420_read_register_16(uint8_t address, uint16_t *register_value) {
 	em2420_deselect();
 
 #ifdef DEBUG
-	printf("Read 16-bit register 0x%02X %s\n\tValue: 0x%04X\n\t", tx_byte, register_strings[address], *register_value);
+	printf("Read 16-bit register 0x%02X %s\n\tValue: 0x%04X\n\t", address, register_strings[address], *register_value);
 	print_status(status);
 	printf("\n");
 #endif
@@ -203,7 +203,7 @@ uint8_t em2420_read_register_16(uint8_t address, uint16_t *register_value) {
 }
 
 /**
- * Writes a register to the EM2420.
+ * Writes a 16-bit register to the EM2420.
  * @param address The address of the register to write.
  * @param register_value The value to write to the register.
  * @returns The status byte.
@@ -221,7 +221,56 @@ uint8_t em2420_write_register_16(uint8_t address, uint16_t register_value) {
 	em2420_deselect();
 
 #ifdef DEBUG
-	printf("Wrote 16-bit register 0x%02X %s\n\tValue: 0x%04X\n\t", tx_byte, register_strings[address], register_value);
+	printf("Wrote 16-bit register 0x%02X %s\n\tValue: 0x%04X\n\t", address, register_strings[address], register_value);
+	print_status(status);
+	printf("\n");
+#endif
+
+	return status;
+}
+
+/**
+ * Reads a 16-bit register from the EM2420.
+ * @param address The address of the register to read.
+ * @param register_value A pointer to an 8-bit integer to store the register
+ * value in.
+ * @returns The status byte.
+ */
+uint8_t em2420_read_register_8(uint8_t address, uint8_t *register_value) {
+	// Mask to ensure 6-bit address, and set bit 6 to signify a read
+	uint8_t tx_byte = (address & 0b00111111) | 0b01000000;
+
+	em2420_select();
+	uint8_t status = spi_tx_rx(tx_byte);
+	*register_value = spi_tx_rx(0);
+	em2420_deselect();
+
+#ifdef DEBUG
+	printf("Read 8-bit register 0x%02X %s\n\tValue: 0x%02X\n\t", address, register_strings[address], *register_value);
+	print_status(status);
+	printf("\n");
+#endif
+
+	return status;
+}
+
+/**
+ * Writes a 8-bit register to the EM2420.
+ * @param address The address of the register to write.
+ * @param register_value The value to write to the register.
+ * @returns The status byte.
+ */
+uint8_t em2420_write_register_8(uint8_t address, uint8_t register_value) {
+	// Mask to ensure 6-bit address
+	uint8_t tx_byte = address & 0b00111111;
+
+	em2420_select();
+	uint8_t status = spi_tx_rx(tx_byte);
+	spi_tx_rx(register_value);
+	em2420_deselect();
+
+#ifdef DEBUG
+	printf("Wrote 8-bit register 0x%02X %s\n\tValue: 0x%02X\n\t", address, register_strings[address], register_value);
 	print_status(status);
 	printf("\n");
 #endif

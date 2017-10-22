@@ -1,12 +1,11 @@
 #define F_CPU 8000000UL
 
 #include <stdio.h>
+#include <avr/io.h>
 #include <util/delay.h>
 #include "em2420.h"
 #include "spi.h"
 #include "uart.h"
-
-void uart_putch(char c);
 
 void main() {
 	uart_init();
@@ -27,15 +26,18 @@ void main() {
 
 	_delay_ms(10);
 
-	em2420_write_register_16(EM2420_REGISTER_IOCFG1, 0b0000001111011111);
+	em2420_write_register_8(EM2420_REGISTER_RXFIFO, 0xAA);
+	em2420_write_register_8(EM2420_REGISTER_RXFIFO, 0xBB);
+	em2420_write_register_8(EM2420_REGISTER_RXFIFO, 0xCC);
+	em2420_write_register_8(EM2420_REGISTER_RXFIFO, 0xDD);
 
 	_delay_ms(10);
 
-	while(1) {
-		uint16_t reg_fsmstate;
-		em2420_read_register_16(EM2420_REGISTER_FSMSTATE, &reg_fsmstate);
-		_delay_ms(500);
-	}
+	uint8_t reg_rxfifo;
+	em2420_read_register_8(EM2420_REGISTER_RXFIFO, &reg_rxfifo);
+	em2420_read_register_8(EM2420_REGISTER_RXFIFO, &reg_rxfifo);
+	em2420_read_register_8(EM2420_REGISTER_RXFIFO, &reg_rxfifo);
+	em2420_read_register_8(EM2420_REGISTER_RXFIFO, &reg_rxfifo);
 
 	while (1) {}
 }
