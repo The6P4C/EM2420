@@ -92,6 +92,8 @@ const char *register_strings[] = {
  * Initializes the EM2420.
  */
 void em2420_init() {
+	spi_init();
+
 	// Initialize RESET_N, VREG_EN and CSn as outputs
 	EM2420_RESET_N_DDR |= EM2420_RESET_N_BIT;
 	EM2420_VREG_EN_DDR |= EM2420_VREG_EN_BIT;
@@ -100,12 +102,14 @@ void em2420_init() {
 	// Enable the EM2420's voltage regulators
 	EM2420_VREG_EN_PORT |= EM2420_VREG_EN_BIT;
 
-	// Give the voltage regulator time to enable
+	// Give the voltage regulator time to enable - according to the datasheet
+	// this should only take a max of 0.6ms, but let's wait for 10ms to be safe
 	_delay_ms(10);
 
-	// Reset the EM2420 with a low pulse on its reset pin
+	// Reset the EM2420 with a low pulse on its reset pin  - 50ms is enough to
+	// make sure it's reset
 	EM2420_RESET_N_PORT &= ~EM2420_RESET_N_BIT;
-	_delay_ms(10);
+	_delay_ms(50);
 	EM2420_RESET_N_PORT |= EM2420_RESET_N_BIT;
 
 	// Give the EM2420 time to boot
