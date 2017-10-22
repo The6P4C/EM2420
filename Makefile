@@ -1,6 +1,10 @@
 CC=avr-gcc
 CCFLAGS=-mmcu=atmega128 -std=c99 -O2
 
+ifeq ($(DEBUG),1)
+	CCFLAGS+=-DDEBUG
+endif
+
 LD=$(CC)
 LDFLAGS=$(CCFLAGS)
 

@@ -1,5 +1,6 @@
 #define F_CPU 8000000UL
 
+#include <stdio.h>
 #include <avr/io.h>
 #include <util/delay.h>
 #include "em2420.h"
@@ -19,6 +20,12 @@
 #define EM2420_CSn_DDR DDRB
 #define EM2420_CSn_PORT PORTB
 #define EM2420_CSn_BIT (1 << 0)
+
+const char *register_strings[] = {
+	"SNOP",
+	"SXOSCON"
+};
+
 
 /**
  * Initializes the EM2420.
@@ -42,6 +49,32 @@ void em2420_init() {
 
 	// Give the EM2420 time to boot
 	_delay_ms(10);
+}
+
+/**
+ * Prints a status byte for debugging purposes.
+ * @param status The status byte to print.
+ */
+void print_status(uint8_t status) {
+	static const char *status_byte_bit_strings[] = {
+		"RESERVED",
+		"RSSI_VALID",
+		"LOCK",
+		"TX_ACTIVE",
+		"ENC_BUSY",
+		"TX_UNDERFLOW",
+		"MOSC16M_STABLE",
+		"RESERVED"
+	};
+
+	printf("Status: 0x%02X", status);
+
+	for (int i = 0; i < 7; ++i) {
+		if (status & (1 << i)) {
+			printf(" ");
+			printf(status_byte_bit_strings[i]);
+		}
+	}
 }
 
 /**
@@ -71,6 +104,12 @@ uint8_t em2420_send_command_strobe(uint8_t address) {
 	em2420_select();
 	uint8_t status = spi_tx_rx(tx_byte);
 	em2420_deselect();
+
+#ifdef DEBUG
+	printf("Sent command strobe 0x%02X %s\n\t", tx_byte, register_strings[tx_byte]);
+	print_status(status);
+	printf("\n");
+#endif
 
 	return status;
 }

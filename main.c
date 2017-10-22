@@ -18,17 +18,14 @@ void main() {
 	uint8_t status;
 
 	status = em2420_send_command_strobe(EM2420_STROBE_SNOP);
-	printf("SNOP\n\tStatus: 0x%02X\n", status);
 
 	_delay_ms(10);
 
 	status = em2420_send_command_strobe(EM2420_STROBE_SXOSCON);
-	printf("SXOSCON\n\tStatus: 0x%02X\n", status);
 
 	_delay_ms(10);
 
 	status = em2420_send_command_strobe(EM2420_STROBE_SNOP);
-	printf("SNOP\n\tStatus: 0x%02X\n", status);
 
 	while (1) {}
 }
