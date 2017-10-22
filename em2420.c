@@ -110,6 +110,27 @@ void em2420_init() {
 
 	// Give the EM2420 time to boot
 	_delay_ms(10);
+
+	// Turn on the oscillator
+	em2420_send_command_strobe(EM2420_STROBE_SXOSCON);
+
+	_delay_ms(10);
+}
+
+/**
+ * Selects the EM2420 using the CS pin.
+ */
+void em2420_select() {
+	// CS is active low
+	EM2420_CSn_PORT &= ~EM2420_CSn_BIT;
+}
+
+/**
+ * De-selects the EM2420 using the CS pin.
+ */
+void em2420_deselect() {
+	// CS is active low
+	EM2420_CSn_PORT |= EM2420_CSn_BIT;
 }
 
 /**
@@ -136,22 +157,6 @@ void print_status(uint8_t status) {
 			printf(status_byte_bit_strings[i]);
 		}
 	}
-}
-
-/**
- * Selects the EM2420 using the CS pin.
- */
-void em2420_select() {
-	// CS is active low
-	EM2420_CSn_PORT &= ~EM2420_CSn_BIT;
-}
-
-/**
- * De-selects the EM2420 using the CS pin.
- */
-void em2420_deselect() {
-	// CS is active low
-	EM2420_CSn_PORT |= EM2420_CSn_BIT;
 }
 
 /**
