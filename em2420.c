@@ -1,6 +1,5 @@
 #define F_CPU 8000000UL
 
-#include <stdio.h>
 #include <avr/io.h>
 #include <util/delay.h>
 #include "em2420.h"
@@ -20,73 +19,6 @@
 #define EM2420_CSn_DDR DDRB
 #define EM2420_CSn_PORT PORTB
 #define EM2420_CSn_BIT (1 << 0)
-
-const char *register_strings[] = {
-	"SNOP",
-	"SXOSCON",
-	"STXCAL",
-	"SRXON",
-	"STXON",
-	"STXONCCA",
-	"SRFOFF",
-	"SXOSCOFF",
-	"SFLUSHRX",
-	"SFLUSHTX",
-	"SACK",
-	"SACKPEND",
-	"SRXDEC",
-	"STXENC",
-	"SAES",
-	0, // Not used
-	"MAIN",
-	"MDMCTRL0",
-	"MDMCTRL1",
-	"RSSI",
-	"SYNCWORD",
-	"TXCTRL",
-	"RXCTRL0",
-	"RXCTRL1",
-	"FSCTRL",
-	"SECCTRL0",
-	"SECCTRL1",
-	"BATTMON",
-	"IOCFG0",
-	"IOCFG1",
-	"MANFIDL",
-	"MANFIDH",
-	"FSMTC",
-	"MANAND",
-	"MANOR",
-	"AGCCTRL",
-	"AGCTST0",
-	"AGCTST1",
-	"AGCTST2",
-	"FSTST0",
-	"FSTST1",
-	"FSTST2",
-	"FSTST3",
-	"RXBPFTST",
-	"FSMSTATE",
-	"ADCTST",
-	"DACTST",
-	"TOPTST",
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	"TXFIFO",
-	"RXFIFO"
-};
 
 /**
  * Initializes the EM2420.
@@ -136,33 +68,6 @@ void em2420_deselect() {
 	// CS is active low
 	EM2420_CSn_PORT |= EM2420_CSn_BIT;
 }
-
-/**
- * Prints a status byte for debugging purposes.
- * @param status The status byte to print.
- */
-void print_status(uint8_t status) {
-	static const char *status_byte_bit_strings[] = {
-		"RESERVED",
-		"RSSI_VALID",
-		"LOCK",
-		"TX_ACTIVE",
-		"ENC_BUSY",
-		"TX_UNDERFLOW",
-		"MOSC16M_STABLE",
-		"RESERVED"
-	};
-
-	printf("Status: 0x%02X", status);
-
-	for (int i = 0; i < 7; ++i) {
-		if (status & (1 << i)) {
-			printf(" ");
-			printf(status_byte_bit_strings[i]);
-		}
-	}
-}
-
 /**
  * Sends a command strobe to the EM2420.
  * @param address The address to send the command strobe to.
@@ -175,12 +80,6 @@ uint8_t em2420_send_command_strobe(uint8_t address) {
 	em2420_select();
 	uint8_t status = spi_tx_rx(tx_byte);
 	em2420_deselect();
-
-#ifdef DEBUG
-	printf("Sent command strobe 0x%02X %s\n\t", address, register_strings[address]);
-	print_status(status);
-	printf("\n");
-#endif
 
 	return status;
 }
@@ -201,12 +100,6 @@ uint8_t em2420_read_register_16(uint8_t address, uint16_t *register_value) {
 	*register_value = spi_tx_rx(0) << 8;
 	*register_value |= spi_tx_rx(0);
 	em2420_deselect();
-
-#ifdef DEBUG
-	printf("Read 16-bit register 0x%02X %s\n\tValue: 0x%04X\n\t", address, register_strings[address], *register_value);
-	print_status(status);
-	printf("\n");
-#endif
 
 	return status;
 }
@@ -229,12 +122,6 @@ uint8_t em2420_write_register_16(uint8_t address, uint16_t register_value) {
 	spi_tx_rx(register_value_low);
 	em2420_deselect();
 
-#ifdef DEBUG
-	printf("Wrote 16-bit register 0x%02X %s\n\tValue: 0x%04X\n\t", address, register_strings[address], register_value);
-	print_status(status);
-	printf("\n");
-#endif
-
 	return status;
 }
 
@@ -254,12 +141,6 @@ uint8_t em2420_read_register_8(uint8_t address, uint8_t *register_value) {
 	*register_value = spi_tx_rx(0);
 	em2420_deselect();
 
-#ifdef DEBUG
-	printf("Read 8-bit register 0x%02X %s\n\tValue: 0x%02X\n\t", address, register_strings[address], *register_value);
-	print_status(status);
-	printf("\n");
-#endif
-
 	return status;
 }
 
@@ -277,12 +158,6 @@ uint8_t em2420_write_register_8(uint8_t address, uint8_t register_value) {
 	uint8_t status = spi_tx_rx(tx_byte);
 	spi_tx_rx(register_value);
 	em2420_deselect();
-
-#ifdef DEBUG
-	printf("Wrote 8-bit register 0x%02X %s\n\tValue: 0x%02X\n\t", address, register_strings[address], register_value);
-	print_status(status);
-	printf("\n");
-#endif
 
 	return status;
 }
