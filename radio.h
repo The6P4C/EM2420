@@ -8,7 +8,7 @@
 
 void radio_init();
 bool radio_is_data_available();
-int radio_get_packet(uint8_t packet[]);
+int radio_receive_packet(uint8_t packet[]);
 void radio_send_packet(uint8_t packet[], int length);
 
 #endif

@@ -16,7 +16,7 @@ void main() {
 	while (true) {
 		if (radio_is_data_available()) {
 			uint8_t packet[RADIO_MAX_PACKET_SIZE];
-			int length = radio_get_packet(packet);
+			int length = radio_receive_packet(packet);
 
 			printf("Received length 0x%02X packet:", length);
 			for (int i = 0; i < length; ++i) {

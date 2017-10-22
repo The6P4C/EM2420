@@ -40,7 +40,7 @@ bool radio_is_data_available() {
  * the contents of the packet into.
  * @returns The length of the packet
  */
-int radio_get_packet(uint8_t packet[]) {
+int radio_receive_packet(uint8_t packet[]) {
 	uint8_t length;
 	em2420_read_register_8(EM2420_REGISTER_RXFIFO, &length);
 
