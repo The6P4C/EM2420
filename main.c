@@ -15,8 +15,6 @@ void main() {
 
 	printf("\n\nInitialization finished.\n");
 
-	uint16_t reg_fsmstate;
-
 	em2420_send_command_strobe(EM2420_STROBE_SNOP);
 
 	_delay_ms(10);
@@ -25,15 +23,19 @@ void main() {
 
 	_delay_ms(10);
 
-	em2420_read_register(EM2420_REGISTER_FSMSTATE, &reg_fsmstate);
-
-	_delay_ms(10);
-
 	em2420_send_command_strobe(EM2420_STROBE_SRXON);
 
 	_delay_ms(10);
 
-	em2420_read_register(EM2420_REGISTER_FSMSTATE, &reg_fsmstate);
+	em2420_write_register_16(EM2420_REGISTER_IOCFG1, 0b0000001111011111);
+
+	_delay_ms(10);
+
+	while(1) {
+		uint16_t reg_fsmstate;
+		em2420_read_register_16(EM2420_REGISTER_FSMSTATE, &reg_fsmstate);
+		_delay_ms(500);
+	}
 
 	while (1) {}
 }
