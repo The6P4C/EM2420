@@ -68,6 +68,7 @@ void em2420_deselect() {
 	// CS is active low
 	EM2420_CSn_PORT |= EM2420_CSn_BIT;
 }
+
 /**
  * Sends a command strobe to the EM2420.
  * @param address The address to send the command strobe to.
